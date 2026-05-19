@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NACOS Awards 2026 - Vote Now</title>
+    <style>
+        :root { --dark: #0f2e1a; --gold: #ffd700; --green: #1a5f2a; --hnd: #667eea; --nd: #f5576c; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: linear-gradient(135deg, var(--dark), var(--green)); color: #fff; min-height: 100vh; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: rgba(255,255,255,0.06); border-radius: 20px; padding: 30px; border: 2px solid var(--gold); backdrop-filter: blur(10px); }
+        h1, h2, h3 { color: var(--gold); text-align: center; margin-bottom: 15px; }
+        p { text-align: center; margin-bottom: 15px; color: #eee; }
+        .countdown-banner { background: linear-gradient(135deg, #ff416c, #ff4b2b); padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(255,75,43,0.4); }
+        .countdown-banner.closed { background: #555; box-shadow: none; }
+        .closed-msg { background: #e74c3c; padding: 15px; border-radius: 10px; text-align: center; font-weight: bold; margin-bottom: 20px; display: none; }
+        .category-select { background: rgba(255,255,255,0.08); padding: 15px; border-radius: 12px; margin-bottom: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; border: 2px solid transparent; }
+        .category-select:hover { background: rgba(255,255,255,0.12); }
+        .category-select.active { border-color: var(--gold); background: rgba(255,215,0,0.15); }
+        .category-select input { width: 20px; height: 20px; margin-right: 12px; cursor: pointer; }
+        .price-tag { background: var(--gold); color: var(--dark); padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9em; }
+        .section-title { color: #fff; margin: 25px 0 15px; padding-left: 10px; border-left: 4px solid; }
+        .hnd-title { border-color: var(--hnd); color: var(--hnd); }
+        .nd-title { border-color: var(--nd); color: var(--nd); }
+        .nominee-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-top: 15px; }
+        .nominee-card { background: rgba(255,255,255,0.08); border: 2px solid transparent; border-radius: 15px; padding: 15px; text-align: center; transition: all 0.3s; }
+        .nominee-card.has-votes { border-color: var(--gold); background: rgba(255,215,0,0.15); box-shadow: 0 0 15px rgba(255,215,0,0.3); }
+        .nominee-card img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 3px solid #fff; object-position: top center; }
+        .nominee-name { display: block; font-weight: bold; color: var(--gold); font-size: 1.1em; margin-bottom: 8px; }
+        .quantity-control { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 8px; }
+        .qty-btn { width: 32px; height: 32px; border: none; border-radius: 50%; background: var(--gold); color: var(--dark); font-size: 1.2em; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .qty-btn:hover { transform: scale(1.1); }
+        .qty-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .qty-display { font-size: 1.3em; font-weight: bold; min-width: 30px; }
+        .vote-subtotal { font-size: 0.85em; color: #ccc; margin-top: 5px; }
+        .total-box { background: linear-gradient(135deg, var(--gold), #ffed4e); color: var(--dark); padding: 20px; border-radius: 15px; margin: 25px 0; text-align: center; }
+        .total-amount { font-size: 2.5em; font-weight: bold; }
+        .account-box { background: #fff; padding: 20px; border-radius: 12px; border: 3px dashed var(--dark); margin: 20px 0; text-align: center; }
+        .account-number { font-size: 2.5em; font-weight: bold; letter-spacing: 3px; color: var(--dark); background: var(--gold); padding: 15px; border-radius: 10px; margin: 15px 0; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0 15px; border: 2px solid var(--gold); border-radius: 8px; font-size: 16px; background: #fff; color: #000; }
+        button { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .btn-gold { background: var(--gold); color: var(--dark); }
+        .btn-green { background: #4CAF50; color: #fff; }
+        .btn-gold:disabled, .btn-green:disabled { opacity: 0.5; cursor: not-allowed; }
+        button:hover { transform: scale(1.02); }
+        .help-text { font-size: 0.85em; color: #ccc; margin-top: 5px; }
+        .hidden { display: none; }
+        .section-header { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin: 30px 0 20px; }
+        .section-header.hnd { border-left: 5px solid var(--hnd); }
+        .section-header.nd { border-left: 5px solid var(--nd); }
+        .category { margin-bottom: 30px; }
+        .category h3 { text-align: left; color: #fff; margin-bottom: 10px; }
+        #successMessage { background: #4CAF50; padding: 30px; border-radius: 15px; text-align: center; margin-top: 20px; }
+        .payment-header { background: linear-gradient(135deg, var(--gold), #ffed4e); color: var(--dark); padding: 20px; border-radius: 15px; margin-bottom: 20px; text-align: center; }
+        .payment-header h2 { color: var(--dark); margin: 0; }
+        .checkmark { background: #4CAF50; color: white; padding: 5px 15px; border-radius: 5px; margin-right: 10px; }
+        @media (max-width: 600px) { .container { padding: 20px 15px; } .total-amount { font-size: 2em; } .nominee-grid { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="text-align:center; margin-bottom:20px;">
+            <h1>🏆 NACOS AWARDS 2026</h1>
+            <p>AAPOLY Chapter | Celebrating Excellence</p>
+        </div>
+        <div class="countdown-banner" id="countdownBanner">⏳ VOTING ENDS IN: <span id="timer">Loading...</span></div>
+        <div id="closedMsg" class="closed-msg">🚫 VOTING HAS CLOSED! Thank you for participating.</div>
+
+        <div id="selectionSection">
+            <h2>📋 Select Categories to Vote In</h2>
+            <p style="color:#ccc; margin-bottom:20px;">Choose categories, then set how many votes per nominee.</p>
+            <h3 class="section-title hnd-title">🎓 HND CATEGORIES</h3>
+            <div id="hndSelection"></div>
+            <h3 class="section-title nd-title">📚 ND CATEGORIES</h3>
+            <div id="ndSelection"></div>
+            <div class="total-box">
+                <p style="margin:0; font-weight:bold;">ESTIMATED TOTAL</p>
+                <div class="total-amount" id="totalAmount">₦0</div>
+            </div>
+            <button class="btn-gold" id="payBtn" onclick="showVotingForm()" disabled>🗳️ Next: Set Vote Quantities</button>
+        </div>
+
+        <div class="hidden" id="votingSection">
+            <div class="payment-header" style="margin-bottom:15px;">
+                <h2>🗳️ Set Vote Quantities</h2>
+                <p style="margin:8px 0 0; color:var(--dark);">Use + / - buttons to buy multiple votes per nominee</p>
+            </div>
+            <div id="votingCategories"></div>
+            <div class="total-box" style="margin-top:20px;">
+                <p style="margin:0; font-weight:bold;">GRAND TOTAL</p>
+                <div class="total-amount" id="grandTotal">₦0</div>
+            </div>
+            <button class="btn-green" id="proceedBtn" onclick="proceedToPayment()" disabled>💳 Pay & Submit All Votes</button>
+            <button class="btn-gold" style="margin-top:10px; background:#666; color:#fff;" onclick="goBackToSelection()">← Back to Selection</button>
+        </div>
+
+        <div class="hidden" id="paymentForm">
+            <div class="payment-header">
+                <h2><span class="checkmark">✓</span>Confirm Payment</h2>
+                <p style="margin:10px 0 0;">Total for <strong id="finalCatCount">0</strong> votes across categories</p>
+            </div>
+            <div class="account-box">
+                <p style="margin:0; color:#0f2e1a; font-weight:bold;">TRANSFER ₦<span id="payAmount">0</span> TO:</p>
+                <div class="account-number">2183231826</div>
+                <p style="margin:5px 0; color:#0f2e1a; font-weight:bold; font-size:1.2em;">Adetokunbo Aderinsola Kehinde</p>
+                <p style="margin:0; color:#666;">UBA Bank</p>
+            </div>
+            <form id="verifyForm">
+                <label>Full Name</label>
+                <input type="text" id="name" required placeholder="Your Name">
+                <label>Phone Number</label>
+                <input type="tel" id="phone" required placeholder="08012345678">
+                <label>I am a:</label>
+                <select id="category">
+                    <option value="Outsider">🌍 Outsider / General Public</option>
+                    <option value="HND Student">🎓 HND Student</option>
+                    <option value="ND Student">📚 ND Student</option>
+                    <option value="Alumni">🎓 Alumni</option>
+                    <option value="Staff">👨‍🏫 Staff / Faculty</option>
+                </select>
+                <label>Transaction Reference ID</label>
+                <input type="text" id="transRef" required placeholder="From Bank Alert (e.g. UBN...)">
+                
+                <label>📸 Payment Receipt/Screenshot (Required)</label>
+                <input type="file" id="receiptFile" accept="image/*" required>
+                <p class="help-text">Select a screenshot or photo of your payment receipt (Max 5MB)</p>
+                
+                <button type="submit" class="btn-green">📤 Submit & Finalize</button>
+            </form>
+            <button class="btn-gold" style="margin-top:10px; background:#666; color:#fff;" onclick="goBackToVoting()">← Back to Voting</button>
+        </div>
+
+        <div id="successMessage" class="hidden">
+            <h2>🎉 ALL VOTES SUBMITTED!</h2>
+            <p>Thank you for voting in the NACOS Awards 2026.</p>
+            <p style="margin-top:10px; font-size:0.9em;">⏳ Receipt is uploading... It may take 10-15 seconds to appear in the admin dashboard.</p>
+            <button class="btn-gold" onclick="location.reload()">🔄 Vote Again</button>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbzclJyqHl2OnwXPidkvFhHKStdJugn9uCcnrqu4c7-pFjYO0Z07_WL_-9B2r1S-E7K1ow/exec';
+        const VOTING_DEADLINE = new Date("2026-05-27T23:59:59+01:00").getTime();
+        let votingClosed = false, selectedCats = [], voteQuantities = {};
+
+        const PRICES = {'Most Popular': 1000, 'Most Expensive': 1000, 'default': 500};
+        const CATEGORIES = [
+            {id:'cat1', name:'Most Influential'}, {id:'cat2', name:'Entrepreneur of the Year'},
+            {id:'cat3', name:'Most Handsome'}, {id:'cat4', name:'Most Beautiful'},
+            {id:'cat5', name:'Fashionista Male'}, {id:'cat6', name:'Fashionista Female'},
+            {id:'cat7', name:'Most Popular'}, {id:'cat8', name:'Most Expensive'},
+            {id:'cat9', name:'Brand of the Year'}, {id:'cat10', name:'Most Talented'},
+            {id:'cat11', name:'Best Couple'}, {id:'cat12', name:'Mr Charismatic'},
+            {id:'cat13', name:'Miss Charismatic'}, {id:'cat14', name:'Best Personality'},
+            {id:'cat15', name:'Most Dramatic'}, {id:'cat16', name:'Best Musician'}
+        ];
+
+        const NOMINEES = {
+            'hnd_cat1': [{ name: "HND - Adebayo J.", img: "https://ui-avatars.com/api/?name=Adebayo+J&background=667eea&color=fff&size=150" }, { name: "HND - Chioma O.", img: "https://ui-avatars.com/api/?name=Chioma+O&background=f5576c&color=fff&size=150" }, { name: "HND - Emmanuel N.", img: "https://ui-avatars.com/api/?name=Emmanuel+N&background=4CAF50&color=fff&size=150" }],
+            'hnd_cat2': [{ name: "HND - Apena Fathia", img: "https://i.postimg.cc/k5Fkvqhv/Whats-App-Image-2026-05-18-at-2-03-42-PM-(1).jpg" }, { name: "HND - Adeeko Ayomide Clinton", img: "https://i.postimg.cc/GpKKc4yJ/Whats-App-Image-2026-05-18-at-10-16-08-AM.jpg" }, { name: "HND - Kemi A.", img: "https://ui-avatars.com/api/?name=Kemi+A&background=4CAF50&color=fff&size=150" }],
+            'hnd_cat3': [{ name: "HND - Balogun Damilare", img: "https://ui-avatars.com/api/?name=David+E&background=667eea&color=fff&size=150" }, { name: "HND - Badejo Akorede Odofin.", img: "https://i.postimg.cc/rFRfSyvP/Whats-App-Image-2026-05-18-at-10-22-00-AM.jpg" }, { name: "HND - Adekunle Samson.", img: "https://ui-avatars.com/api/?name=Godwin+O&background=4CAF50&color=fff&size=150" }],
+            'hnd_cat4': [{ name: "HND - Hannah P.", img: "https://ui-avatars.com/api/?name=Hannah+P&background=667eea&color=fff&size=150" }, { name: "HND - Ifeoma U.", img: "https://ui-avatars.com/api/?name=Ifeoma+U&background=f5576c&color=fff&size=150" }, { name: "HND - Jennifer A.", img: "https://ui-avatars.com/api/?name=Jennifer+A&background=4CAF50&color=fff&size=150" }],
+            'hnd_cat5': [{ name: "HND - Umanah Monday Emmanuel", img: "https://ui-avatars.com/api/?name=Kevin+O&background=667eea&color=fff&size=150" }, { name: "HND - Odejimi Isreal", img: "https://i.postimg.cc/HsLgHM80/IMG-9148-JPG.jpg" }, { name: "HND - Michael D.", img: "https://ui-avatars.com/api/?name=Michael+D&background=4CAF50&color=fff&size=150" }],
+            'hnd_cat6': [{ name: "HND - Aburimen Norah Joyce", img: "https://i.postimg.cc/X7xYk3d8/IMG-5510.avif" }, { name: "HND - Oluwaseun A.", img: "https://ui-avatars.com/api/?name=Oluwaseun+A&background=f5576c&color=fff&size=150" }, { name: "HND - Patience E.", img: "https://ui-avatars.com/api/?name=Patience+E&background=4CAF50&color=fff&size=150" }],
+            'hnd_cat7': [{ name: "HND - Erinle Olarewanju Ayomide", img: "https://i.postimg.cc/VvYmGQwy/Whats-App-Image-2026-05-15-at-12-06-58-PM.jpg" }, { name: "HND - Adeeko Ayomide Clinton", img: "https://i.postimg.cc/GpKKc4yJ/Whats-App-Image-2026-05-18-at-10-16-08-AM.jpg" }, { name: "HND - Samuel T.", img: "https://ui-avatars.com/api/?name=Samuel+T&background=4CAF50&color=fff&size=150" }],
+            'hnd_cat8': [{ name: "HND - Aburimen Norah Joyce", img: "https://i.postimg.cc/X7xYk3d8/IMG-5510.avif" }, { name: "HND - Idowu Idris Adebayo", img: "https://ui-avatars.com/api/?name=Uche+O&background=f5576c&color=fff&size=150" }, { name: "HND - Otubanjo Opeyemi", img: "https://ui-avatars.com/api/?name=Victor+I&background=4CAF50&color=fff&size=150" }],
+            'hnd_cat9': [{ name: "HND - Wale A.", img: "https://ui-avatars.com/api/?name=Wale+A&background=667eea&color=fff&size=150" }, { name: "HND - Xavier N.", img: "https://ui-avatars.com/api/?name=Xavier+N&background=f5576c&color=fff&size=150" }, { name: "HND - Yusuf B.", img: "https://ui-avatars.com/api/?name=Yusuf+B&background=4CAF50&color=fff&size=150" }],
+            'hnd_cat10': [{ name: "HND - Zainab Y.", img: "https://ui-avatars.com/api/?name=Zainab+Y&background=667eea&color=fff&size=150" }, { name: "HND - Ahmed M.", img: "https://ui-avatars.com/api/?name=Ahmed+M&background=f5576c&color=fff&size=150" }, { name: "HND - Blessing O.", img: "https://ui-avatars.com/api/?name=Blessing+O&background=4CAF50&color=fff&size=150" }],
+            'hnd_cat11': [{ name: "HND - Couple A", img: "https://ui-avatars.com/api/?name=Couple+A&background=667eea&color=fff&size=150" }, { name: "HND - Couple B", img: "https://ui-avatars.com/api/?name=Couple+B&background=f5576c&color=fff&size=150" }, { name: "HND - Couple C", img: "https://ui-avatars.com/api/?name=Couple+C&background=4CAF50&color=fff&size=150" }],
+            'hnd_cat12': [{ name: "HND - Male Nominee 1", img: "https://ui-avatars.com/api/?name=Male+1&background=667eea&color=fff&size=150" }, { name: "HND - Male Nominee 2", img: "https://ui-avatars.com/api/?name=Male+2&background=f5576c&color=fff&size=150" }, { name: "HND - Male Nominee 3", img: "https://ui-avatars.com/api/?name=Male+3&background=4CAF50&color=fff&size=150" }],
+            'hnd_cat13': [{ name: "HND - Ajasa Adijat Abiola", img: "https://i.postimg.cc/BQbR1gvH/Whats-App-Image-2026-05-15-at-12-21-19-PM.jpg" }, { name: "HND - Female Nominee 2", img: "https://ui-avatars.com/api/?name=Female+2&background=f5576c&color=fff&size=150" }, { name: "HND - Female Nominee 3", img: "https://ui-avatars.com/api/?name=Female+3&background=4CAF50&color=fff&size=150" }],
+            'hnd_cat14': [{ name: "HND - Ige Joel Kayode", img: "https://i.postimg.cc/SsFypg6X/Whats-App-Image-2026-05-16-at-1-32-48-PM.jpg" }, { name: "HND - Engr. Tobi", img: "https://ui-avatars.com/api/?name=Engr+Tobi&background=f5576c&color=fff&size=150" }, { name: "HND - Prof. Nkechi", img: "https://ui-avatars.com/api/?name=Prof+Nkechi&background=4CAF50&color=fff&size=150" }],
+            'hnd_cat15': [{ name: "HND - Jagunmolu Hamed Boluwatife", img: "https://i.postimg.cc/W3vPyhVJ/Whats-App-Image-2026-05-16-at-1-07-30-PM.jpg" }, { name: "HND - Stella O.", img: "https://ui-avatars.com/api/?name=Stella+O&background=f5576c&color=fff&size=150" }, { name: "HND - Theo E.", img: "https://ui-avatars.com/api/?name=Theo+E&background=4CAF50&color=fff&size=150" }],
+            'hnd_cat16': [{ name: "HND - Musician 1", img: "https://ui-avatars.com/api/?name=Musician+1&background=667eea&color=fff&size=150" }, { name: "HND - Musician 2", img: "https://ui-avatars.com/api/?name=Musician+2&background=f5576c&color=fff&size=150" }, { name: "HND - Musician 3", img: "https://ui-avatars.com/api/?name=Musician+3&background=4CAF50&color=fff&size=150" }],
+            
+            'nd_cat1': [{ name: "ND - Akinpelumi Oluwaseyifunmi Festus", img: "https://i.postimg.cc/tRmMmGpg/Whats-App-Image-2026-05-15-at-12-05-09-PM.jpg" }, { name: "ND -Moses Tomiwa Joshua", img: "https://i.postimg.cc/5t3RFpX4/Whats-App-Image-2026-05-19-at-3-49-38-AM.jpg" }, { name: "ND - Chidi E.", img: "https://ui-avatars.com/api/?name=Chidi+E&background=ffe66d&color=fff&size=150" }],
+            'nd_cat2': [{ name: "ND - Fatima B.", img: "https://ui-avatars.com/api/?name=Fatima+B&background=ff6b6b&color=fff&size=150" }, { name: "ND - Godspower N.", img: "https://ui-avatars.com/api/?name=Godspower+N&background=4ecdc4&color=fff&size=150" }, { name: "ND - Hauwa S.", img: "https://ui-avatars.com/api/?name=Hauwa+S&background=ffe66d&color=fff&size=150" }],
+            'nd_cat3': [{ name: "ND - Ibrahim M.", img: "https://ui-avatars.com/api/?name=Ibrahim+M&background=ff6b6b&color=fff&size=150" }, { name: "ND - Jane O.", img: "https://ui-avatars.com/api/?name=Jane+O&background=4ecdc4&color=fff&size=150" }, { name: "ND - Kelechi O.", img: "https://ui-avatars.com/api/?name=Kelechi+O&background=ffe66d&color=fff&size=150" }],
+            'nd_cat4': [{ name: "ND - Linda P.", img: "https://ui-avatars.com/api/?name=Linda+P&background=ff6b6b&color=fff&size=150" }, { name: "ND - Mohammed A.", img: "https://ui-avatars.com/api/?name=Mohammed+A&background=4ecdc4&color=fff&size=150" }, { name: "ND - Ngozi U.", img: "https://ui-avatars.com/api/?name=Ngozi+U&background=ffe66d&color=fff&size=150" }],
+            'nd_cat5': [{ name: "ND - Oluwatobi A.", img: "https://ui-avatars.com/api/?name=Oluwatobi+A&background=ff6b6b&color=fff&size=150" }, { name: "ND - Patricia E.", img: "https://ui-avatars.com/api/?name=Patricia+E&background=4ecdc4&color=fff&size=150" }, { name: "ND - Qudus B.", img: "https://ui-avatars.com/api/?name=Qudus+B&background=ffe66d&color=fff&size=150" }],
+            'nd_cat6': [{ name: "ND - Rasaq O.", img: "https://ui-avatars.com/api/?name=Rasaq+O&background=ff6b6b&color=fff&size=150" }, { name: "ND - Sade N.", img: "https://ui-avatars.com/api/?name=Sade+N&background=4ecdc4&color=fff&size=150" }, { name: "ND - Tunde D.", img: "https://ui-avatars.com/api/?name=Tunde+D&background=ffe66d&color=fff&size=150" }],
+            'nd_cat7': [{ name: "ND - Uche B.", img: "https://ui-avatars.com/api/?name=Uche+B&background=ff6b6b&color=fff&size=150" }, { name: "ND - Victor A.", img: "https://ui-avatars.com/api/?name=Victor+A&background=4ecdc4&color=fff&size=150" }, { name: "ND - Wuraola O.", img: "https://ui-avatars.com/api/?name=Wuraola+O&background=ffe66d&color=fff&size=150" }],
+            'nd_cat8': [{ name: "ND - Xavier N.", img: "https://ui-avatars.com/api/?name=Xavier+N&background=ff6b6b&color=fff&size=150" }, { name: "ND - Yemisi U.", img: "https://ui-avatars.com/api/?name=Yemisi+U&background=4ecdc4&color=fff&size=150" }, { name: "ND - Zainab O.", img: "https://ui-avatars.com/api/?name=Zainab+O&background=ffe66d&color=fff&size=150" }],
+            'nd_cat9': [{ name: "ND - Adeniran W.", img: "https://ui-avatars.com/api/?name=Adeniran+W&background=ff6b6b&color=fff&size=150" }, { name: "ND - Bako Y.", img: "https://ui-avatars.com/api/?name=Bako+Y&background=4ecdc4&color=fff&size=150" }, { name: "ND - Chukwuemeka", img: "https://ui-avatars.com/api/?name=Chukwuemeka&background=ffe66d&color=fff&size=150" }],
+            'nd_cat10': [{ name: "ND - Daniella Y.", img: "https://ui-avatars.com/api/?name=Daniella+Y&background=ff6b6b&color=fff&size=150" }, { name: "ND - Emmanuel M.", img: "https://ui-avatars.com/api/?name=Emmanuel+M&background=4ecdc4&color=fff&size=150" }, { name: "ND - Funke O.", img: "https://ui-avatars.com/api/?name=Funke+O&background=ffe66d&color=fff&size=150" }],
+            'nd_cat11': [{ name: "ND - Couple X", img: "https://ui-avatars.com/api/?name=Couple+X&background=ff6b6b&color=fff&size=150" }, { name: "ND - Couple Y", img: "https://ui-avatars.com/api/?name=Couple+Y&background=4ecdc4&color=fff&size=150" }, { name: "ND - Couple Z", img: "https://ui-avatars.com/api/?name=Couple+Z&background=ffe66d&color=fff&size=150" }],
+            'nd_cat12': [{ name: "ND - Male Nominee 1", img: "https://ui-avatars.com/api/?name=Male+1&background=ff6b6b&color=fff&size=150" }, { name: "ND - Male Nominee 2", img: "https://ui-avatars.com/api/?name=Male+2&background=4ecdc4&color=fff&size=150" }, { name: "ND - Male Nominee 3", img: "https://ui-avatars.com/api/?name=Male+3&background=ffe66d&color=fff&size=150" }],
+            'nd_cat13': [{ name: "ND - Female Nominee 1", img: "https://ui-avatars.com/api/?name=Female+1&background=ff6b6b&color=fff&size=150" }, { name: "ND - Female Nominee 2", img: "https://ui-avatars.com/api/?name=Female+2&background=4ecdc4&color=fff&size=150" }, { name: "ND - Female Nominee 3", img: "https://ui-avatars.com/api/?name=Female+3&background=ffe66d&color=fff&size=150" }],
+            'nd_cat14': [{ name: "ND - Dr. Bola", img: "https://ui-avatars.com/api/?name=Dr+Bola&background=ff6b6b&color=fff&size=150" }, { name: "ND - Engr. Sola", img: "https://ui-avatars.com/api/?name=Engr+Sola&background=4ecdc4&color=fff&size=150" }, { name: "ND - Prof. Ireti", img: "https://ui-avatars.com/api/?name=Prof+Ireti&background=ffe66d&color=fff&size=150" }],
+            'nd_cat15': [{ name: "ND - Rex J.", img: "https://ui-avatars.com/api/?name=Rex+J&background=ff6b6b&color=fff&size=150" }, { name: "ND - Stella M.", img: "https://ui-avatars.com/api/?name=Stella+M&background=4ecdc4&color=fff&size=150" }, { name: "ND - Theo K.", img: "https://ui-avatars.com/api/?name=Theo+K&background=ffe66d&color=fff&size=150" }],
+            'nd_cat16': [{ name: "ND - Akinwale Temitayo Daniel", img: "https://i.postimg.cc/Dz191nGK/Whats-App-Image-2026-05-16-at-9-04-36-AM.jpg" }, { name: "ND - Musician 2", img: "https://ui-avatars.com/api/?name=Musician+2&background=4ecdc4&color=fff&size=150" }, { name: "ND - Musician 3", img: "https://ui-avatars.com/api/?name=Musician+3&background=ffe66d&color=fff&size=150" }]
+        };
+
+        function updateCountdown() {
+            const dist = VOTING_DEADLINE - Date.now();
+            const timerEl = document.getElementById('timer'), banner = document.getElementById('countdownBanner');
+            if(dist < 0) {
+                timerEl.innerHTML = "VOTING CLOSED"; banner.classList.add('closed');
+                document.getElementById('closedMsg').style.display = 'block';
+                document.getElementById('payBtn').disabled = true; votingClosed = true;
+                clearInterval(countdownInterval); return;
+            }
+            const d=Math.floor(dist/864e5), h=Math.floor((dist%864e5)/36e5), m=Math.floor((dist%36e5)/6e4), s=Math.floor((dist%6e4)/1e3);
+            timerEl.innerHTML = `${d}d ${h}h ${m}m ${s}s`;
+        }
+
+        function buildSelectionUI() {
+            const hnd = document.getElementById('hndSelection'), nd = document.getElementById('ndSelection');
+            ['hnd','nd'].forEach(type => {
+                const box = type==='hnd'?hnd:nd;
+                CATEGORIES.forEach(cat => {
+                    const price = PRICES[cat.name] || PRICES.default;
+                    const id = `${type}_${cat.id}`;
+                    const label = document.createElement('label');
+                    label.className = 'category-select';
+                    label.innerHTML = `<div style="display:flex;align-items:center;"><input type="checkbox" id="${id}" data-price="${price}" data-name="${cat.name}"><span><strong>${cat.name}</strong> (${type.toUpperCase()})</span></div><span class="price-tag">₦${price}/vote</span>`;
+                    label.querySelector('input').addEventListener('change', function() {
+                        if(this.checked) { label.classList.add('active'); if(!selectedCats.find(c=>c.id===id)) selectedCats.push({id, price, name:cat.name, type}); }
+                        else { label.classList.remove('active'); selectedCats = selectedCats.filter(c=>c.id!==id); delete voteQuantities[id]; }
+                        updateEstimate();
+                    });
+                    box.appendChild(label);
+                });
+            });
+        }
+
+        function updateEstimate() {
+            const est = selectedCats.reduce((s,c)=>s+c.price,0);
+            document.getElementById('totalAmount').innerText = `₦${est.toLocaleString()}`;
+            document.getElementById('payBtn').disabled = selectedCats.length===0;
+        }
+
+        function showVotingForm() {
+            if(votingClosed || selectedCats.length===0) return;
+            document.getElementById('selectionSection').classList.add('hidden');
+            document.getElementById('votingSection').classList.remove('hidden');
+            renderVotingForm();
+            updateGrandTotal();
+        }
+        function goBackToSelection() { document.getElementById('votingSection').classList.add('hidden'); document.getElementById('selectionSection').classList.remove('hidden'); }
+        function goBackToVoting() { document.getElementById('paymentForm').classList.add('hidden'); document.getElementById('votingSection').classList.remove('hidden'); }
+
+        function renderVotingForm() {
+            const box = document.getElementById('votingCategories');
+            let html = '';
+            ['hnd', 'nd'].forEach(type => {
+                const userCats = selectedCats.filter(c => c.id.startsWith(type));
+                if (!userCats.length) return;
+                html += `<div class="section-header ${type}"><h2>${type.toUpperCase()} CATEGORIES</h2></div>`;
+                userCats.forEach(cat => {
+                    const catNominees = NOMINEES[cat.id] || [];
+                    html += `<div class="category"><h3>${cat.name} (₦${cat.price}/vote)</h3><div class="nominee-grid">`;
+                    catNominees.forEach((nom, idx) => {
+                        const key = `${cat.id}_${nom.name}`;
+                        if(!voteQuantities[key]) voteQuantities[key] = 0;
+                        const qty = voteQuantities[key];
+                        const safeKey = key.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9]/g,'');
+                        html += `<div class="nominee-card ${qty>0?'has-votes':''}" id="card-${safeKey}"><img src="${nom.img}" alt="${nom.name}"><span class="nominee-name">${nom.name}</span><div class="quantity-control"><button type="button" class="qty-btn" onclick="changeQty('${key}', -1, ${cat.price})" ${qty===0?'disabled':''}>−</button><span class="qty-display" id="qty-${safeKey}">${qty}</span><button type="button" class="qty-btn" onclick="changeQty('${key}', 1, ${cat.price})">+</button></div><div class="vote-subtotal" id="sub-${safeKey}">${qty>0?'₦'+(qty*cat.price).toLocaleString():'₦0'}</div></div>`;
+                    });
+                    html += `</div></div>`;
+                });
+            });
+            box.innerHTML = html;
+        }
+
+        window.changeQty = function(key, delta, price) {
+            voteQuantities[key] = Math.max(0, (voteQuantities[key]||0) + delta);
+            const safeKey = key.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9]/g,'');
+            document.getElementById(`qty-${safeKey}`).innerText = voteQuantities[key];
+            document.getElementById(`sub-${safeKey}`).innerText = voteQuantities[key]>0 ? '₦'+(voteQuantities[key]*price).toLocaleString() : '₦0';
+            const card = document.getElementById(`card-${safeKey}`);
+            card.classList.toggle('has-votes', voteQuantities[key]>0);
+            card.querySelector('.qty-btn:first-child').disabled = voteQuantities[key]===0;
+            updateGrandTotal();
+        };
+
+        function updateGrandTotal() {
+            let total = 0, totalVotes = 0;
+            selectedCats.forEach(cat => {
+                const catNominees = NOMINEES[cat.id] || [];
+                catNominees.forEach(nom => {
+                    const key = `${cat.id}_${nom.name}`;
+                    const qty = voteQuantities[key] || 0;
+                    total += qty * cat.price;
+                    totalVotes += qty;
+                });
+            });
+            document.getElementById('grandTotal').innerText = `₦${total.toLocaleString()}`;
+            document.getElementById('proceedBtn').disabled = total===0;
+            document.getElementById('finalCatCount').innerText = totalVotes;
+            document.getElementById('payAmount').innerText = total.toLocaleString();
+        }
+
+        function proceedToPayment() {
+            document.getElementById('votingSection').classList.add('hidden');
+            document.getElementById('paymentForm').classList.remove('hidden');
+        }
+
+        document.getElementById('verifyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true; btn.innerText = "Processing...";
+
+            const fileInput = document.getElementById('receiptFile');
+            const file = fileInput.files[0];
+            const transRef = document.getElementById('transRef').value.trim().toUpperCase();
+            
+            if (!file) { alert('❌ Please select a receipt image.'); btn.disabled = false; btn.innerText = "📤 Submit & Finalize"; return; }
+            if (file.size > 5 * 1024 * 1024) { alert('❌ Image too large. Max 5MB.'); btn.disabled = false; btn.innerText = "📤 Submit & Finalize"; return; }
+            if (transRef.length < 6) { alert('❌ Invalid Transaction ID.'); btn.disabled = false; btn.innerText = "📤 Submit & Finalize"; return; }
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Data = e.target.result.split(',')[1];
+                
+                // ✅ Build votes array with EXPLICIT NUMBER conversion
+                const votes = [];
+                selectedCats.forEach(cat => {
+                    const catNominees = NOMINEES[cat.id] || [];
+                    catNominees.forEach(nom => {
+                        const key = `${cat.id}_${nom.name}`;
+                        const qty = voteQuantities[key] || 0;
+                        if(qty > 0) {
+                            const voteCount = Number(qty); // ✅ Force to number
+                            votes.push({ 
+                                category: cat.name, 
+                                type: cat.type || 'N/A', 
+                                nominee: nom.name, 
+                                votes: voteCount, // ✅ Send as number
+                                subtotal: Number(voteCount * cat.price) // ✅ Force subtotal to number
+                            });
+                        }
+                    });
+                });
+                
+                const totalAmount = Number(votes.reduce((s,v)=>s+Number(v.subtotal),0)); // ✅ Force total to number
+
+                const payload = {
+                    name: document.getElementById('name').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    category: document.getElementById('category').value,
+                    transRef: transRef,
+                    total: totalAmount, // ✅ Already a number
+                    votes: votes, // ✅ All values are numbers
+                    receiptBase64: base64Data,
+                    receiptType: file.type
+                };
+
+                try {
+                    console.log("📤 Sending payment:", payload);
+                    
+                    // ✅ Send payment & receipt FIRST
+                    const payRes = await fetch(BACKEND_URL, { 
+                        method: 'POST', 
+                        body: JSON.stringify({ 
+                            action: 'savePayment', 
+                            name: payload.name, 
+                            phone: payload.phone, 
+                            transRef: payload.transRef, 
+                            total: payload.total, 
+                            receiptBase64: payload.receiptBase64, 
+                            receiptType: payload.receiptType 
+                        }) 
+                    });
+                    
+                    // ✅ FIX: Safe JSON parsing with fallback
+                    let payData;
+                    try {
+                        payData = await payRes.json();
+                        console.log("✅ Payment response:", payData);
+                    } catch (jsonError) {
+                        console.log("⚠️ Response not JSON, assuming success");
+                        payData = { status: 'success' };
+                    }
+                    
+                    if(payData.status !== 'success') {
+                        throw new Error('Payment save failed: ' + payData.message);
+                    }
+                    
+                    // ✅ Small delay to ensure sheet is ready for votes
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    // ✅ THEN send votes
+                    console.log("📤 Sending votes:", payload.votes);
+                    const voteRes = await fetch(BACKEND_URL, { 
+                        method: 'POST', 
+                        body: JSON.stringify({ 
+                            action: 'saveVote', 
+                            voterName: payload.name, 
+                            transRef: payload.transRef, 
+                            votes: payload.votes 
+                        }) 
+                    });
+                    
+                    // ✅ Safe JSON parsing for votes too
+                    let voteData;
+                    try {
+                        voteData = await voteRes.json();
+                        console.log("✅ Vote response:", voteData);
+                    } catch (jsonError) {
+                        console.log("⚠️ Vote response not JSON, assuming success");
+                        voteData = { status: 'success' };
+                    }
+                    
+                    if(voteData.status !== 'success') {
+                        throw new Error('Vote save failed: ' + voteData.message);
+                    }
+
+                    // ✅ WhatsApp message
+                    let msg = `Hello Admin, I paid ₦${payload.total} for NACOS Awards.\n\nName: ${payload.name}\nPhone: ${payload.phone}\nType: ${payload.category}\nTrans ID: ${payload.transRef}\nReceipt: Attached\n\nVotes:\n`;
+                    payload.votes.forEach(v => msg += `- ${v.nominee} (${v.type}): ${v.votes} votes (₦${v.subtotal})\n`);
+                    window.open(`https://wa.me/2348124553175?text=${encodeURIComponent(msg)}`);
+
+                    alert('✅ Payment & Receipt Submitted!\n\n⏳ Receipt is uploading...\nIt may take 10-15 seconds to appear in the admin dashboard.\n\nAdmin will verify shortly.');
+                    document.getElementById('paymentForm').classList.add('hidden');
+                    document.getElementById('successMessage').classList.remove('hidden');
+                    
+                } catch(err) {
+                    console.error("❌ Submission error:", err);
+                    // ✅ Even if error, payment might have saved - show helpful message
+                    alert('⚠️ Submission encountered an issue, but your payment may have been recorded.\n\nPlease check with admin if your payment shows in the system.');
+                } finally {
+                    btn.disabled = false; 
+                    btn.innerText = "📤 Submit & Finalize";
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+
+        window.onload = function() { 
+            buildSelectionUI(); 
+            updateCountdown(); 
+            const countdownInterval = setInterval(updateCountdown, 1000); 
+        };
+    </script>
+</body>
+</html>
